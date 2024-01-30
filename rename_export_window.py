@@ -19,49 +19,69 @@ def create_new_window():
     new_window = tkinter.Toplevel()
     new_window.geometry("650x150")
 
+    # validation to check if image exists in target directory
+    def image_exists(name_data, folder_path):
+        if os.path.exists(folder_path + "\\" + str(name_data) + ".png"):
+            tkinter.messagebox.showerror('Image already exists in folder.                              ')
+            return True
+        else:
+            return False
+
     # validation for first image number in range
     def validate_text_first():
-        value_first = int(first.get())
-        if value_first < 1:
-            tkinter.messagebox.showerror('Image number must be at minimum 1.                              ')
-            first.delete(0, END)
-            first.insert(0, "1")
-            return False
-        elif value_first > 24:
-            tkinter.messagebox.showerror('Image number must be at maximum 24.                              ')
-            first.delete(0, END)
-            first.insert(0, "24")
-            return False
+        if len(first.get()) != 0:
+            value_first = int(first.get())
+            if value_first < 1:
+                tkinter.messagebox.showerror('Image number must be at minimum 1.                              ')
+                first.delete(0, END)
+                first.insert(0, "1")
+                return False
+            elif value_first > 24:
+                tkinter.messagebox.showerror('Image number must be at maximum 24.                              ')
+                first.delete(0, END)
+                first.insert(0, "24")
+                return False
+            else:
+                return True
         else:
-            return True
+            tkinter.messagebox.showerror('No minimum value inputted.                              ')
+            return False
 
     # validation for last image number in range
     def validate_text_last():
-        value_last = int(last.get())
-        if value_last < 1:
-            tkinter.messagebox.showerror('Image number must be at minimum 1.                              ')
-            last.delete(0, END)
-            last.insert(0, "1")
-            return False
-        elif value_last > 24:
-            tkinter.messagebox.showerror('Image number must be at maximum 24.                              ')
-            last.delete(0, END)
-            last.insert(0, "24")
-            return False
+        if len(last.get()) != 0:
+            value_last = int(last.get())
+            if value_last < 1:
+                tkinter.messagebox.showerror('Image number must be at minimum 1.                              ')
+                last.delete(0, END)
+                last.insert(0, "1")
+                return False
+            elif value_last > 24:
+                tkinter.messagebox.showerror('Image number must be at maximum 24.                              ')
+                last.delete(0, END)
+                last.insert(0, "24")
+                return False
+            else:
+                return True
         else:
-            return True
+            tkinter.messagebox.showerror('No maximum value inputted.                              ')
+            return False
 
     # validation for difference in image number in range
     def validate_text_difference():
-        value_first = int(first.get())
-        value_last = int(last.get())
-        if value_last < value_first:
-            tkinter.messagebox.showerror('The last image number must be more than the first image number.                              ')
-            last.delete(0, END)
-            last.insert(0, str(value_first))
-            return False
+        if len(first.get()) != 0 and len(last.get()) != 0:
+            value_first = int(first.get())
+            value_last = int(last.get())
+            if value_last < value_first:
+                tkinter.messagebox.showerror('The last image number must be more than the first image number.                              ')
+                last.delete(0, END)
+                last.insert(0, str(value_first))
+                return False
+            else:
+                return True
         else:
-            return True
+            tkinter.messagebox.showerror('Both minimum and maximum values must be inputted.                              ')
+            return False
 
     label1 = Label(new_window, text="Pictures from: ")
     label1.pack()
@@ -137,7 +157,6 @@ def create_new_window():
 
             while first_picture <= last_picture:
                 offset = first_picture-1
-                print(offset)
                 m = cursor.execute("""
                 SELECT * FROM image_table LIMIT 1 OFFSET
                 """ + str(offset))
@@ -146,10 +165,13 @@ def create_new_window():
                     name_data = x[1]
                     image_data = x[2]
 
+                exists = image_exists(name_data, folder_path)
+
                 imported_image = Image.open(io.BytesIO(image_data))
                 imported_image.save(str(name_data) + ".png", "PNG")
 
-                shutil.move(str(name_data) + ".png", folder_path)
+                if not exists:
+                    shutil.move(str(name_data) + ".png", folder_path)
 
                 first_picture += 1
 

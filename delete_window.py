@@ -93,12 +93,10 @@ def create_new_window(delete_window):
 
             while first_picture <= last_picture:
                 actual_id = db.get(rowid.picture_id == first_picture-1)
-                print("1")
                 cursor.execute("""
                 DELETE FROM image_table WHERE rowid = ?
                 """, (actual_id.get("row_id"),))
                 db.remove(where("picture_id") == str(first_picture))
-                print("2")
                 first_picture += 1
                 count += 1
 
