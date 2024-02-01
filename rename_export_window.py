@@ -73,14 +73,18 @@ def create_new_window():
             value_first = int(first.get())
             value_last = int(last.get())
             if value_last < value_first:
-                tkinter.messagebox.showerror('The last image number must be more than the first image number.                              ')
+                tkinter.messagebox.showerror(
+                    'The last image number must be more than the first image number.                              '
+                )
                 last.delete(0, END)
                 last.insert(0, str(value_first))
                 return False
             else:
                 return True
         else:
-            tkinter.messagebox.showerror('Both minimum and maximum values must be inputted.                              ')
+            tkinter.messagebox.showerror(
+                'Both minimum and maximum values must be inputted.                              '
+            )
             return False
 
     label1 = Label(new_window, text="Pictures from: ")
@@ -113,6 +117,7 @@ def create_new_window():
         last_boolean = validate_text_last()
         difference_boolean = validate_text_difference()
 
+        # checks made to prevent incorrect inputs
         if first_boolean is True and last_boolean is True and difference_boolean is True:
             database = sqlite3.connect("image.db")
             cursor = database.cursor()
@@ -120,16 +125,25 @@ def create_new_window():
             new_name = rename.get("1.0", "end-1c")
             first_picture = int(first.get())
             last_picture = int(last.get())
+            initial_picture = first_picture
             count = 1
 
             rowid = Query()
 
+            # renaming with an index for the batch
             while first_picture <= last_picture:
                 actual_id = db.get(rowid.picture_id == first_picture-1)
 
-                cursor.execute("""
-                UPDATE image_table SET name = ? WHERE rowid = ?
-                """, (new_name + "_" + str(count), actual_id.get("row_id")))
+                # single pictures do not have an index as they are not part of a batch
+                if initial_picture < last_picture:
+                    cursor.execute("""
+                    UPDATE image_table SET name = ? WHERE rowid = ?
+                    """, (new_name + "_" + str(count), actual_id.get("row_id")))
+                else:
+                    cursor.execute("""
+                    UPDATE image_table SET name = ? WHERE rowid = ?
+                    """, (new_name, actual_id.get("row_id")))
+
                 first_picture += 1
                 count += 1
 
@@ -147,6 +161,7 @@ def create_new_window():
         difference_boolean = validate_text_difference()
         folder_path = filedialog.askdirectory()
 
+        # checks made to prevent incorrect inputs
         if first_boolean is True and last_boolean is True and difference_boolean is True:
             database = sqlite3.connect("image.db")
             cursor = database.cursor()
@@ -155,8 +170,12 @@ def create_new_window():
             name_data = 0
             image_data = 0
 
+            with open("page_number.txt", "r") as f:
+                page_number = int(f.readline())
+
+            # exports the pictures one by one by using an offset
             while first_picture <= last_picture:
-                offset = first_picture-1
+                offset = (first_picture-25)+(24*page_number)
                 m = cursor.execute("""
                 SELECT * FROM image_table LIMIT 1 OFFSET
                 """ + str(offset))
@@ -170,9 +189,12 @@ def create_new_window():
                 imported_image = Image.open(io.BytesIO(image_data))
                 imported_image.save(str(name_data) + ".png", "PNG")
 
+                # checks if the image already exists
                 if not exists:
+                    print("not exists")
                     shutil.move(str(name_data) + ".png", folder_path)
-
+                else:
+                    print("exists")
                 first_picture += 1
 
             # disable export button after being used once

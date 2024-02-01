@@ -1,6 +1,7 @@
 from tkinter import Label, StringVar
 
 
+# creates a label which displays the page number
 def display_page_number(page_window):
     with open("page_number.txt", "r") as f:
         page_number = f.readline()

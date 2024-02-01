@@ -54,8 +54,6 @@ def buttons_create(button_window):
         if page_number > 1:
             page_number -= 1
 
-        print(str(page_number))
-
         with open("page_number.txt", "w") as f:
             f.write(str(page_number))
 
@@ -70,8 +68,6 @@ def buttons_create(button_window):
         # count number of records from table
         cursor.execute("""SELECT COUNT(*) FROM image_table""")
         records_number = cursor.fetchone()[0]
-        print(records_number)
-        print(int(math.ceil(records_number/24)))
 
         with open("page_number.txt", "r") as f:
             page_number = int(f.readline())
@@ -88,36 +84,56 @@ def buttons_create(button_window):
         cursor.close()
 
     # button to add picture
-    button_window.add_picture_image = tkinter.PhotoImage(file="add_image.png")
+    button_window.add_picture_image = tkinter.PhotoImage(file="buttons/add_image.png")
     add_picture = tkinter.Button(
-        button_window, image=button_window.add_picture_image, command=add_picture_command, height=60, width=60
+        button_window,
+        image=button_window.add_picture_image,
+        command=add_picture_command,
+        height=60,
+        width=60
     )
     add_picture.place(x=0, y=0)
 
     # button to delete picture
-    button_window.delete_picture_image = tkinter.PhotoImage(file="delete_image.png")
+    button_window.delete_picture_image = tkinter.PhotoImage(file="buttons/delete_image.png")
     delete_picture = tkinter.Button(
-        button_window, image=button_window.delete_picture_image, command=delete_picture_command, height=60, width=60
+        button_window,
+        image=button_window.delete_picture_image,
+        command=delete_picture_command,
+        height=60,
+        width=60
     )
     delete_picture.place(x=60, y=0)
 
     # button to organise pictures
-    button_window.organise_picture_image = tkinter.PhotoImage(file="organise_image.png")
+    button_window.organise_picture_image = tkinter.PhotoImage(file="buttons/organise_image.png")
     organise_picture = tkinter.Button(
-        button_window, image=button_window.organise_picture_image, command=organise_pictures_command, height=60, width=60
+        button_window,
+        image=button_window.organise_picture_image,
+        command=organise_pictures_command,
+        height=60,
+        width=60
     )
     organise_picture.place(x=120, y=0)
 
     # button to display previous page
-    button_window.left_page_image = tkinter.PhotoImage(file="page_left.png")
+    button_window.left_page_image = tkinter.PhotoImage(file="buttons/page_left.png")
     left_page = tkinter.Button(
-        button_window, image=button_window.left_page_image, command=left_page_command, height=60, width=247.5
+        button_window,
+        image=button_window.left_page_image,
+        command=left_page_command,
+        height=60,
+        width=247.5
     )
     left_page.place(x=50, y=540)
 
     # button to display next page
-    button_window.right_page_image = tkinter.PhotoImage(file="page_right.png")
+    button_window.right_page_image = tkinter.PhotoImage(file="buttons/page_right.png")
     right_page = tkinter.Button(
-        button_window, image=button_window.right_page_image, command=right_page_command, height=60, width=247.5
+        button_window,
+        image=button_window.right_page_image,
+        command=right_page_command,
+        height=60,
+        width=247.5
     )
     right_page.place(x=297.5, y=540)
